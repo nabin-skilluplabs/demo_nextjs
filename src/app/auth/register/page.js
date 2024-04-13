@@ -3,16 +3,21 @@
 
 import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
+import { useRouter } from 'next/navigation';
+
 
 import validationSchema from './validationSchema';
 import { registerNewUser } from '@/app/auth/register/action';
 import { useState } from "react";
 import SuccessMessage from "@/components/successMessage";
+import ErrorMessage from "@/components/errorMessage";
 
 
   
 export default function Home() {
     const [message, setMessage] = useState('');
+    const [errorMessage, setErrorMessage] = useState('');
+    const { push } = useRouter();
     const {
         register,
         handleSubmit,
@@ -23,13 +28,25 @@ export default function Home() {
       });
 
       const onSubmit = async (data) => {
-        await registerNewUser(data);
+        // const response = await registerNewUser(data);
+        // console.log(response);
+        const {error, errorMessage} = await registerNewUser(data);
+        console.log({error, errorMessage});
+        if(error) {
+          setErrorMessage(errorMessage);
+        }
+        else {
+          push('/users');
+        }
       }
 
     return (
         <form className="space-y-6" onSubmit={handleSubmit(onSubmit)}>
             {
                 message && (<SuccessMessage message={message} />)
+            }
+            {
+                errorMessage && (<ErrorMessage message={errorMessage} />)
             }
               <div>
                 <label htmlFor="fullName" className="block text-sm font-medium leading-6 text-gray-900">

@@ -12,3 +12,8 @@ export const getAllUsers = async() => {
     const users = await prisma.user.findMany();
     return users;
 }
+
+export const getUser = async(condition) => {
+    const users = await prisma.user.findFirst({where: condition });
+    return users;
+}
